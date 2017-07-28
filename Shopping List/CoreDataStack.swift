@@ -1,5 +1,5 @@
 //
-//  CoreDataModel.swift
+//  CoreDataStack.swift
 //  Shopping List
 //
 //  Created by Joe Lucero on 7/28/17.
