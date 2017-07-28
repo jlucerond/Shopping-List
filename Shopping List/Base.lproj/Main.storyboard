@@ -21,7 +21,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="ShoppingItemCell" rowHeight="50" id="5M6-Jy-f0C">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="ShoppingItemCell" rowHeight="50" id="5M6-Jy-f0C" customClass="GroceryItemTableViewCell" customModule="Shopping_List" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="28" width="375" height="50"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="5M6-Jy-f0C" id="1bd-cS-sXN">
@@ -34,6 +34,9 @@
                                                 <constraint firstAttribute="width" secondItem="zx4-I5-POk" secondAttribute="height" multiplier="1:1" id="AWq-Qf-HVD"/>
                                             </constraints>
                                             <state key="normal" image="incomplete"/>
+                                            <connections>
+                                                <action selector="groceryCellWasTapped:" destination="5M6-Jy-f0C" eventType="touchUpInside" id="WEC-w6-k9y"/>
+                                            </connections>
                                         </button>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eDF-HR-KOz">
                                             <rect key="frame" x="8" y="0.5" width="302" height="49.5"/>
@@ -52,7 +55,10 @@
                                         <constraint firstItem="zx4-I5-POk" firstAttribute="centerY" secondItem="1bd-cS-sXN" secondAttribute="centerY" id="w2Z-Ma-wRn"/>
                                     </constraints>
                                 </tableViewCellContentView>
-                                <color key="backgroundColor" red="0.0" green="1" blue="0.50196081400000003" alpha="1" colorSpace="calibratedRGB"/>
+                                <connections>
+                                    <outlet property="groceryIsPurchasedButton" destination="zx4-I5-POk" id="wsC-1D-FlQ"/>
+                                    <outlet property="groceryNameLabel" destination="eDF-HR-KOz" id="nEa-L9-2oq"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -61,7 +67,11 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Shopping List" id="WTG-D1-JoH">
-                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="x3g-nC-N9O"/>
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="x3g-nC-N9O">
+                            <connections>
+                                <action selector="addButtonTapped:" destination="Kdv-Xw-ZVj" id="UX8-Wg-SMg"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="c6p-gP-MYo" userLabel="First Responder" sceneMemberID="firstResponder"/>
