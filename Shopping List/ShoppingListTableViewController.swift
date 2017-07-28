@@ -13,11 +13,15 @@ class ShoppingListTableViewController: UITableViewController {
     
     let resultsController: NSFetchedResultsController<GroceryItem> = {
         let request: NSFetchRequest<GroceryItem> = GroceryItem.fetchRequest()
-        request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
+        let sort1 = NSSortDescriptor(key: "category", ascending: true)
+        let sort2 = NSSortDescriptor(key: "isPurchased", ascending: true)
+        let sort3 = NSSortDescriptor(key: "name", ascending: true)
+        
+        request.sortDescriptors = [sort1, sort2, sort3]
         
         return NSFetchedResultsController(fetchRequest: request,
                                           managedObjectContext: CoreDataStack.context,
-                                          sectionNameKeyPath: nil,
+                                          sectionNameKeyPath: "category",
                                           cacheName: nil)
     }()
     
@@ -39,17 +43,25 @@ class ShoppingListTableViewController: UITableViewController {
                                                 message: nil,
                                                 preferredStyle: .alert)
         
-        var myTextField: UITextField?
+        var groceryNameTextField: UITextField?
         
         alertController.addTextField { (textField) in
             textField.placeholder = "Grocery Item"
-            myTextField = textField
+            groceryNameTextField = textField
         }
+        
+        var groceryCategoryTextField: UITextField?
+        
+        alertController.addTextField { (textField) in
+            textField.placeholder = "Category"
+            groceryCategoryTextField = textField
+        }
+        
         
         let addAction = UIAlertAction(title: "Add",
                                       style: .default) { (_) in
-                                        guard let text = myTextField?.text, !text.isEmpty else { return }
-                                        GroceryItemModelController.shared.addNewGroceryItem(name: text)
+                                        guard let groceryName = groceryNameTextField?.text, !groceryName.isEmpty else { return }
+                                        GroceryItemModelController.shared.addNewGroceryItem(name: groceryName, inCategory: groceryCategoryTextField?.text)
         }
         
         let cancelAction = UIAlertAction(title: "Cancel",
@@ -66,15 +78,27 @@ class ShoppingListTableViewController: UITableViewController {
 
 // MARK: - TableView Data Source Methods
 extension ShoppingListTableViewController {
+    override func numberOfSections(in tableView: UITableView) -> Int {
+        return resultsController.sections?.count ?? 0
+    }
+    
+    override func tableView(_ tableView: UITableView,
+                            titleForHeaderInSection section: Int) -> String? {
+        let name = resultsController.sections?[section].name
+        return name
+    }
+    
     override func tableView(_ tableView: UITableView,
                             numberOfRowsInSection section: Int) -> Int {
-        return resultsController.fetchedObjects?.count ?? 0
+        return resultsController.sections?[section].numberOfObjects ?? 0
     }
     
     override func tableView(_ tableView: UITableView,
                             cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "ShoppingItemCell", for: indexPath) as? GroceryItemTableViewCell, let item = resultsController.fetchedObjects?[indexPath.row] else { return UITableViewCell() }
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "ShoppingItemCell", for: indexPath) as? GroceryItemTableViewCell else { return UITableViewCell() }
+        
+        let item = resultsController.object(at: indexPath)
         
         cell.delegate = self
         cell.updateView(with: item)
@@ -104,6 +128,14 @@ extension ShoppingListTableViewController: GroceryItemTableViewCellDelegate {
 
 // MARK: - NSFetchedResultsControllerDelegate Methods
 extension ShoppingListTableViewController: NSFetchedResultsControllerDelegate {
+    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        tableView.beginUpdates()
+    }
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        tableView.endUpdates()
+    }
+    
+    // Deals with 1 object changing within 1 section
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>,
                     didChange anObject: Any,
                     at indexPath: IndexPath?,
@@ -122,6 +154,24 @@ extension ShoppingListTableViewController: NSFetchedResultsControllerDelegate {
         case .update:
             guard let indexPath = indexPath else { return }
             tableView.reloadRows(at: [indexPath], with: .automatic)
+        }
+    }
+    
+    // Deals with the number of sections changing
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>,
+                    didChange sectionInfo: NSFetchedResultsSectionInfo,
+                    atSectionIndex sectionIndex: Int,
+                    for type: NSFetchedResultsChangeType) {
+        switch type {
+        case .delete:
+            // if error here, try replacing indexSet with [sectionIndex]
+            let indexSet = IndexSet.init(integer: sectionIndex)
+            tableView.deleteSections(indexSet, with: .automatic)
+        case .insert:
+            let indexSet = IndexSet.init(integer: sectionIndex)
+            tableView.insertSections(indexSet, with: .automatic)
+        default:
+            return
         }
     }
     

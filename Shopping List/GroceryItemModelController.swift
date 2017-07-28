@@ -11,8 +11,8 @@ import Foundation
 class GroceryItemModelController {
     static let shared = GroceryItemModelController()
     
-    func addNewGroceryItem(name: String) {
-        let _ = GroceryItem(name: name)
+    func addNewGroceryItem(name: String, inCategory category: String?) {
+        let _ = GroceryItem(name: name, category: category)
         saveToCoreData()
     }
     

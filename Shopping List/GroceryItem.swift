@@ -11,10 +11,18 @@ import CoreData
 
 extension GroceryItem {
     convenience init(name: String,
-                     isPurchased: Bool = false,
+                     category: String? = "No Category",
+                     isPurchased: Bool? = false,
                      context: NSManagedObjectContext = CoreDataStack.context) {
         self.init(context: context)
         self.name = name
-        self.isPurchased = isPurchased
+
+        if let category = category {
+            self.category = category
+        }
+        
+        if let isPurchased = isPurchased {
+            self.isPurchased = isPurchased
+        }
     }
 }
